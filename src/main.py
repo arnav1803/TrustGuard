@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 import os
 import glob
-
+import index.css
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
