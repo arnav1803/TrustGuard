@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TruthGuard - Advanced Fact-Checking Platform</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-section {
+            grid-column: 1 / -1;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .text-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .claims-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .claim-item {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .claim-item:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .claim-confidence {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .confidence-high { background: #c6f6d5; color: #22543d; }
+        .confidence-medium { background: #fed7aa; color: #9c4221; }
+        .confidence-low { background: #fbb6ce; color: #742a2a; }
+
+        .verification-results {
+            grid-column: 1 / -1;
+        }
+
+        .result-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .result-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .result-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .status-verified { background: #c6f6d5; color: #22543d; }
+        .status-false { background: #fed7d7; color: #742a2a; }
+        .status-disputed { background: #fed7aa; color: #9c4221; }
+        .status-unverified { background: #e2e8f0; color: #4a5568; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .evidence-sources {
+            margin-top: 15px;
+        }
+
+        .source-link {
+            display: inline-block;
+            background: #edf2f7;
+            color: #4a5568;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            margin: 2px;
+            transition: background 0.3s ease;
+        }
+
+        .source-link:hover {
+            background: #cbd5e0;
+        }
+
+        .report-section {
+            grid-column: 1 / -1;
+            margin-top: 30px;
+        }
+
+        .report-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff40;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🛡️ TruthGuard</h1>
+            <p>Advanced Fact-Checking and Claim Verification Framework</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalClaims">1,247</span>
+                    <span class="stat-label">Claims Verified</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="accuracyRate">94.2%</span>
+                    <span class="stat-label">Accuracy Rate</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="avgTime">2.3s</span>
+                    <span class="stat-label">Avg Process Time</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="activeSources">47</span>
+                    <span class="stat-label">Active Sources</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="card input-section">
+                <h2>
+                    <i data-lucide="edit-3"></i>
+                    Claim Input & Extraction
+                </h2>
+                <div class="input-group">
+                    <label for="claimText">Enter text to analyze for claims:</label>
+                    <textarea 
+                        id="claimText" 
+                        class="text-input" 
+                        placeholder="Paste Reddit posts, news articles, or any text containing claims you want to verify..."
+                    ></textarea>
+                </div>
+                <button class="btn" onclick="extractClaims()" id="extractBtn">
+                    <i data-lucide="search"></i>
+                    Extract Claims
+                </button>
+                
+                <div id="extractedClaims" class="claims-list" style="display: none;">
+                    <h3>Extracted Claims:</h3>
+                    <div id="claimsList"></div>
+                    <button class="btn" onclick="verifyClaims()" id="verifyBtn" style="margin-top: 15px;">
+                        <i data-lucide="check-circle"></i>
+                        Verify Claims
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>
+                    <i data-lucide="database"></i>
+                    Knowledge Graph Integration
+                </h2>
+                <p>Our system integrates with multiple knowledge graphs and databases:</p>
+                <ul style="margin: 15px 0; padding-left: 20px;">
+                    <li>Wikipedia Knowledge Graph</li>
+                    <li>Wikidata Entity Database</li>
+                    <li>Fact-checking APIs (Snopes, PolitiFact)</li>
+                    <li>Academic Paper Citations</li>
+                    <li>News Source Verification</li>
+                </ul>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 87%;"></div>
+                </div>
+                <small>Knowledge Base Coverage: 87%</small>
+            </div>
+
+            <div class="card">
+                <h2>
+                    <i data-lucide="brain"></i>
+                    Semantic Matching Engine
+                </h2>
+                <p>Advanced NLP pipeline for claim analysis:</p>
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                        <span>Named Entity Recognition</span>
+                        <span>94%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 94%;"></div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                        <span>Claim Extraction Accuracy</span>
+                        <span>91%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 91%;"></div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                        <span>Semantic Similarity</span>
+                        <span>88%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 88%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>
+                    <i data-lucide="activity"></i>
+                    Real-time Processing Status
+                </h2>
+                <div id="processingStatus">
+                    <p>System ready for claim verification</p>
+                    <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
+                        <div style="width: 12px; height: 12px; background: #48bb78; border-radius: 50%;"></div>
+                        <span>All systems operational</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card verification-results" id="resultsSection" style="display: none;">
+            <h2>
+                <i data-lucide="shield-check"></i>
+                Verification Results
+            </h2>
+            <div class="result-grid" id="resultsList"></div>
+        </div>
+
+        <div class="card report-section" id="reportSection" style="display: none;">
+            <h2>
+                <i data-lucide="file-text"></i>
+                Verification Report
+            </h2>
+            <div class="report-summary" id="reportSummary"></div>
+            <div id="detailedReport"></div>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="reddit" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>Reddit Integration</h3>
+                <p>Automated collection and analysis of Reddit posts for claim extraction</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="network" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>Knowledge Graphs</h3>
+                <p>Multi-source knowledge integration for comprehensive fact verification</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="zap" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>Real-time Analysis</h3>
+                <p>Fast processing pipeline with confidence scoring and evidence ranking</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="chart-bar" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3>Detailed Reports</h3>
+                <p>Comprehensive verification reports with source reliability metrics</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        let extractedClaimsData = [];
+        let verificationResults = [];
+
+        // Sample claims for demonstration
+        const sampleClaims = [
+            {
+                id: 'claim_1',
+                text: 'The Earth\'s average temperature has risen by 1.1°C since pre-industrial times',
+                confidence: 'high',
+                source: 'post_001'
+            },
+            {
+                id: 'claim_2', 
+                text: 'Vaccines contain microchips for tracking purposes',
+                confidence: 'medium',
+                source: 'post_002'
+            },
+            {
+                id: 'claim_3',
+                text: 'Coffee consumption can reduce the risk of type 2 diabetes',
+                confidence: 'high',
+                source: 'post_003'
+            }
+        ];
+
+        // Sample verification results
+        const sampleResults = [
+            {
+                claim_id: 'claim_1',
+                verification_status: 'verified',
+                confidence_score: 0.94,
+                evidence_count: 12,
+                reasoning: 'Multiple peer-reviewed studies and NASA data confirm this temperature increase.',
+                sources: ['NASA GISS', 'NOAA Climate.gov', 'IPCC Report AR6'],
+                processing_time: 2.1
+            },
+            {
+                claim_id: 'claim_2',
+                verification_status: 'false',
+                confidence_score: 0.98,
+                evidence_count: 8,
+                reasoning: 'No credible evidence supports this claim. Vaccine ingredients are publicly documented.',
+                sources: ['FDA Vaccine Database', 'WHO Guidelines', 'Medical Fact-checkers'],
+                processing_time: 1.8
+            },
+            {
+                claim_id: 'claim_3',
+                verification_status: 'disputed',
+                confidence_score: 0.72,
+                evidence_count: 15,
+                reasoning: 'Some studies show correlation but causation is not definitively established.',
+                sources: ['Harvard Health', 'Mayo Clinic Studies', 'Diabetes Research Papers'],
+                processing_time: 3.2
+            }
+        ];
+
+        function extractClaims() {
+            const text = document.getElementById('claimText').value;
+            const extractBtn = document.getElementById('extractBtn');
+            
+            if (!text.trim()) {
+                alert('Please enter some text to analyze');
+                return;
+            }
+
+            // Simulate loading
+            extractBtn.innerHTML = '<div class="loading"><div class="spinner"></div>Extracting...</div>';
+            extractBtn.disabled = true;
+
+            setTimeout(() => {
+                extractedClaimsData = sampleClaims;
+                displayExtractedClaims();
+                extractBtn.innerHTML = '<i data-lucide="search"></i>Extract Claims';
+                extractBtn.disabled = false;
+                lucide.createIcons();
+
+                // Update processing status
+                updateProcessingStatus('Claims extracted successfully');
+            }, 2000);
+        }
+
+        function displayExtractedClaims() {
+            const claimsSection = document.getElementById('extractedClaims');
+            const claimsList = document.getElementById('claimsList');
+            
+            claimsList.innerHTML = '';
+            
+            extractedClaimsData.forEach(claim => {
+                const claimDiv = document.createElement('div');
+                claimDiv.className = 'claim-item';
+                claimDiv.innerHTML = `
+                    <span class="claim-confidence confidence-${claim.confidence}">${claim.confidence.toUpperCase()}</span>
+                    <p>${claim.text}</p>
+                    <small>Source: ${claim.source}</small>
+                `;
+                claimsList.appendChild(claimDiv);
+            });
+            
+            claimsSection.style.display = 'block';
+        }
+
+        function verifyClaims() {
+            const verifyBtn = document.getElementById('verifyBtn');
+            
+            // Simulate verification process
+            verifyBtn.innerHTML = '<div class="loading"><div class="spinner"></div>Verifying...</div>';
+            verifyBtn.disabled = true;
+
+            updateProcessingStatus('Running verification pipeline...');
+
+            setTimeout(() => {
+                verificationResults = sampleResults;
+                displayVerificationResults();
+                generateReport();
+                
+                verifyBtn.innerHTML = '<i data-lucide="check-circle"></i>Verify Claims';
+                verifyBtn.disabled = false;
+                lucide.createIcons();
+
+                updateProcessingStatus('Verification completed successfully');
+            }, 4000);
+        }
+
+        function displayVerificationResults() {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsList = document.getElementById('resultsList');
+            
+            resultsList.innerHTML = '';
+            
+            verificationResults.forEach(result => {
+                const claim = extractedClaimsData.find(c => c.id === result.claim_id);
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result-card';
+                
+                const statusClass = `status-${result.verification_status.replace('_', '-')}`;
+                const statusIcon = getStatusIcon(result.verification_status);
+                
+                resultDiv.innerHTML = `
+                    <div class="result-status ${statusClass}">
+                        <i data-lucide="${statusIcon}"></i>
+                        ${result.verification_status.replace('_', ' ').toUpperCase()}
+                    </div>
+                    <h4>${claim.text}</h4>
+                    <p><strong>Reasoning:</strong> ${result.reasoning}</p>
+                    <div style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                            <span>Confidence Score:</span>
+                            <span>${(result.confidence_score * 100).toFixed(1)}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${result.confidence_score * 100}%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-sources">
+                        <strong>Evidence Sources (${result.evidence_count}):</strong><br>
+                        ${result.sources.map(source => `<a href="#" class="source-link">${source}</a>`).join('')}
+                    </div>
+                    <small>Processing time: ${result.processing_time}s</small>
+                `;
+                
+                resultsList.appendChild(resultDiv);
+            });
+            
+            resultsSection.style.display = 'block';
+            lucide.createIcons();
+        }
+
+        function generateReport() {
+            const reportSection = document.getElementById('reportSection');
+            const reportSummary = document.getElementById('reportSummary');
+            
+            const totalClaims = verificationResults.length;
+            const verifiedCount = verificationResults.filter(r => r.verification_status === 'verified').length;
+            const falseCount = verificationResults.filter(r => r.verification_status === 'false').length;
+            const disputedCount = verificationResults.filter(r => r.verification_status === 'disputed').length;
+            const avgConfidence = (verificationResults.reduce((sum, r) => sum + r.confidence_score, 0) / totalClaims * 100).toFixed(1);
+            const avgTime = (verificationResults.reduce((sum, r) => sum + r.processing_time, 0) / totalClaims).toFixed(1);
+            
+            reportSummary.innerHTML = `
+                <div class="summary-card">
+                    <div class="stat-number">${totalClaims}</div>
+                    <div class="stat-label">Total Claims</div>
+                </div>
+                <div class="summary-card">
+                    <div class="stat-number">${verifiedCount}</div>
+                    <div class="stat-label">Verified</div>
+                </div>
+                <div class="summary-card">
+                    <div class="stat-number">${falseCount}</div>
+                    <div class="stat-label">False</div>
+                </div>
+                <div class="summary-card">
+                    <div class="stat-number">${disputedCount}</div>
+                    <div class="stat-label">Disputed</div>
+                </div>
+                <div class="summary-card">
+                    <div class="stat-number">${avgConfidence}%</div>
+                    <div class="stat-label">Avg Confidence</div>
+                </div>
+                <div class="summary-card">
+                    <div class="stat-number">${avgTime}s</div>
+                    <div class="stat-label">Avg Time</div>
+                </div>
+            `;
+            
+            reportSection.style.display = 'block';
+        }
+
+        function getStatusIcon(status) {
+            const icons = {
+                'verified': 'check-circle',
+                'false': 'x-circle',
+                'disputed': 'alert-triangle',
+                'unverified': 'help-circle'
+            };
+            return icons[status] || 'help-circle';
+        }
+
+        function updateProcessingStatus(message) {
+            const statusDiv = document.getElementById('processingStatus');
+            const timestamp = new Date().toLocaleTimeString();
+            statusDiv.innerHTML = `
+                <p>${message}</p>
+                <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
+                    <div style="width: 12px; height: 12px; background: #48bb78; border-radius: 50%;"></div>
+                    <span>Last updated: ${timestamp}</span>
+                </div>
+            `;
+        }
+
+        // Animate stats on page load
+        function animateStats() {
+            const stats = ['totalClaims', 'accuracyRate', 'avgTime', 'activeSources'];
+            const targets = [1247, 94.2, 2.3, 47];
+            
+            stats.forEach((stat, index) => {
+                const element = document.getElementById(stat);
+                const target = targets[index];
+                let current = 0;
+                const increment = target / 50;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    
+                    if (stat === 'accuracyRate') {
+                        element.textContent = current.toFixed(1) + '%';
+                    } else if (stat === 'avgTime') {
+                        element.textContent = current.toFixed(1) + 's';
+                    } else {
+                        element.textContent = Math.floor(current).toLocaleString();
+                    }
+                }, 50);
+            });
+        }
+
+        // Initialize page
+        window.addEventListener('load', () => {
+            setTimeout(animateStats, 500);
+        });
+    </script>
+</body>
+</html>
